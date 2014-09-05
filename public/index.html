@@ -12,36 +12,38 @@
 		<script src="js/caesiumStore.js"></script>
 		<script src="js/caesiumControllers.js"></script>
 		<script src="js/caesiumApp.js"></script>
-		<style type="text/css">
-			.tabList li { display: inline; }
-			.tabList li.active { font-weight: bold; }
-		</style>
+		<link rel="stylesheet" type="text/css" href="style/style.css" ></link>
 	</head>
 	<body ng-controller="PageController">
-		<div ng-controller="CurrentEntryCtrl" >
-			<div ng-if="currentEntry">
-				<input type="text" id="task" ng-model="currentEntry.description" />
-				<label id="status">{{status}}</label>
+		<header>
+			<div ng-controller="CurrentEntryCtrl" class="container">
+				<div ng-if="currentEntry">
+					<input type="text" id="task" ng-model="currentEntry.description" />
+					<label id="status">{{status}}</label>
 
-				<select>
-					<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">{{entry | json}} {{entry.dayNumber | getUserDateFromDayNumber}} {{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}}</option>
-				</select>
+					<select>
+						<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">{{entry.dayNumber | getUserDateFromDayNumber}} {{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}}</option>
+					</select>
 
-				<button ng-click="stopWorking()">Stop working</button>
+					<button ng-click="stopWorking()">Stop working</button>
+				</div>
+				<div ng-if="!currentEntry">
+					<button ng-click="startWorking()">Start working</button>
+				</div>
 			</div>
-			<div ng-if="!currentEntry">
-				<button ng-click="startWorking()">Start working</button>
+			<nav>
+				<ul>
+					<li data-ng-repeat="id in [1,2,3,4,5]" ng-class="{active:id == globals.tabid}">
+						<a href="#/tabs/{{id}}">Tab {{id}}</a>
+					</li>
+				</ul>
+			</nav>
+		</header>
+		<main>
+
+			<div class="container">
+			  <div ng-view class="view-frame"></div>
 			</div>
-		</div>
-
-		<ul class="tabList">
-			<li data-ng-repeat="id in [1,2,3,4,5]" ng-class="{active:id == globals.tabid}">
-				<a href="#/tabs/{{id}}">tab {{id}}</a>
-			</li>
-		</ul>
-
-		<div class="view-container">
-		  <div ng-view class="view-frame"></div>
-		</div>
+		</main>
 	</body>
 </html>

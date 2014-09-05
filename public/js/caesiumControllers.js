@@ -13,11 +13,11 @@ controllers.controller('CurrentEntryCtrl', function ($scope, caesiumStore, $loca
 	var updateStateForEntry = function(entry) {
 		console.log(entry);
 		$scope.currentEntry = entry;
-		$scope.status = entry ? entry.description : "Not recording";
+		$scope.globals.status = entry ? entry.description : "Not recording";
 //			$location.path("/notworking");
 	};
 
-	$scope.status = "Loading...";
+	$scope.globals.status = "Loading...";
 
 	logErrors(caesiumStore.getCurrentEntry().then(updateStateForEntry));
 
@@ -28,11 +28,11 @@ controllers.controller('CurrentEntryCtrl', function ($scope, caesiumStore, $loca
 
 	$scope.orderProp = "finishEpochMs";
 
-	$scope.stopWorking = function() {
+	$scope.stopRecording = function() {
 		logErrors(caesiumStore.endCurrentTask().then(function() { updateStateForEntry(null); }));
 	};
 
-	$scope.startWorking = function() {
+	$scope.startRecording = function() {
 		logErrors(caesiumStore.insertNewTask("New Task").then(updateStateForEntry));
 	};
 });

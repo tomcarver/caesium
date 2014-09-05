@@ -1,7 +1,7 @@
 <!doctype html>
-<html lang="en" ng-app="caesiumApp">
+<html lang="en" ng-app="caesiumApp" ng-controller="PageController">
 	<head>
-		<title ng-bind-template="Caesium: {{status}}">Caesium</title>
+		<title ng-bind-template="Caesium: {{globals.status}}">Caesium</title>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular-route.js"></script>
@@ -14,21 +14,20 @@
 		<script src="js/caesiumApp.js"></script>
 		<link rel="stylesheet" type="text/css" href="style/style.css" ></link>
 	</head>
-	<body ng-controller="PageController">
+	<body>
 		<header>
 			<div ng-controller="CurrentEntryCtrl" class="container">
 				<div ng-if="currentEntry">
 					<input type="text" id="task" ng-model="currentEntry.description" />
-					<label id="status">{{status}}</label>
 
 					<select>
-						<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">{{entry.dayNumber | getUserDateFromDayNumber}} {{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}}</option>
+						<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">{{entry.dayNumber | getUserDateFromDayNumber}} {{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}} : {{entry.description}}</option>
 					</select>
 
-					<button ng-click="stopWorking()">Stop working</button>
+					<button ng-click="stopRecording()">Stop recording</button>
 				</div>
 				<div ng-if="!currentEntry">
-					<button ng-click="startWorking()">Start working</button>
+					<button ng-click="startRecording()">Start recording</button>
 				</div>
 			</div>
 			<nav>

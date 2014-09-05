@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en" ng-app="caesiumApp">
+	<head>
+		<title ng-bind-template="Caesium: {{title}}">Caesium</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular-route.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular-animate.js"></script>
+		<script src="js/caesiumLogic.js"></script>
+		<script src="js/promiseHelpers.js"></script>
+		<script src="js/store.js"></script>
+		<script src="js/caesiumStore.js"></script>
+		<script src="js/caesiumControllers.js"></script>
+		<script src="js/caesiumApp.js"></script>
+	</head>
+	<body>
+		<div class="view-container">
+		  <div ng-view class="view-frame"></div>
+		</div>
+	</body>
+</html>

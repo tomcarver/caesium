@@ -1,0 +1,9 @@
+<input type="text" id="task" ng-model="currentEntry.description" />
+<label id="status">{{status}}</label>
+<p>Nothing here {{'yet' + '!'}}</p>
+
+<select>
+	<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">{{entry | json}} {{entry.dayNumber | getUserDateFromDayNumber}} {{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}}</option>
+</select>
+
+<button ng-click="stopWorking()">Stop working</button>

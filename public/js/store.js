@@ -53,12 +53,21 @@ angular.module('store', ['promiseHelpers'])
 					});
 			};
 
-			ns.singleOperation = function(dbOperation) {
+			ns.usingDb = function(dbOperation) {
 				return ns.open()
 					.then(function(db) {
 						return dbOperation(db)["finally"](function() { db.close(); });
 					});
 			};
+
+			ns.editInTransaction = function(db, storeName, withStore) {
+				return promiseHelpers.newTransactionPromise(function() {
+					var transaction = db.transaction(storeName, "readwrite");
+					withStore(transaction.objectStore(storeName));
+
+					return transaction;
+				});
+			}
 
 			return ns;
 		};

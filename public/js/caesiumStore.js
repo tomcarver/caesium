@@ -17,22 +17,19 @@ caesiumStore
 caesiumStore
 	.service('caesiumStore', function($q, store, promiseHelpers, $filter) {
 
-		this.getEntriesForToday = function() {
-			return store
-				.singleOperation(function(db) {
-					return promiseHelpers.newQueryPromise(function() {
-						var dayNumber = $filter("getDayNumber")(new Date());
-						return db
-							.transaction("entries", 'readonly')
-							.objectStore("entries")
-							.index("dayNumber")
-							.openCursor(new IDBKeyRange.only(dayNumber));
-					});
-				});
+		var entriesForToday = function(db) {
+			return promiseHelpers.newQueryPromise(function() {
+				var dayNumber = $filter("getDayNumber")(new Date());
+				return db
+					.transaction("entries", 'readonly')
+					.objectStore("entries")
+					.index("dayNumber")
+					.openCursor(new IDBKeyRange.only(dayNumber));
+			});
 		};
 
-		this.getCurrentEntry = function() {
-			return this.getEntriesForToday()
+		var tryGetCurrentEntryForToday = function(db) {
+			return entriesForToday(db)
 				.then(function(todayEntries) {
 					var len = todayEntries.length;
 					for (var i = 0; i < len; i++) {
@@ -45,31 +42,35 @@ caesiumStore
 				});
 		};
 
-		this.insertNewTask = function(taskName) {
-			return store.singleOperation(function(db) {
-				return promiseHelpers.newTransactionPromise(function() {
-					var transaction = db.transaction("entries", "readwrite");
-					var entryStore = transaction.objectStore("entries");
-					entryStore.add($filter("newEntry")(taskName));
+		this.getEntriesForToday = function() {
+			return store.usingDb(entriesForToday);
+		};
 
-					return transaction;
+		this.getCurrentEntry = function() {
+			return store.usingDb(tryGetCurrentEntryForToday);
+		};
+
+		this.insertNewTask = function(taskName) {
+			return store.usingDb(function(db) {
+				var newEntry = $filter("newEntry")(taskName);
+				return store.editInTransaction(db, "entries", function(entryStore) {
+					entryStore.add(newEntry);
 				});
 			});
 		};
 
 		this.endCurrentTask = function() {
-			return this.getCurrentEntry()
-				.then(function(entry) {
-					if (entry) {
-						entry.finishEpochMs = (new Date()).getTime();
-						return store.singleOperation(function(db) {
-							return promiseHelpers.newTransactionPromise(function() {
-								var transaction = db.transaction("entries", "readwrite");
-								transaction.objectStore("entries").put(entry);
-								return transaction;
+			return store.usingDb(function(db) {
+				return tryGetCurrentEntryForToday(db)
+					.then(function(entry) {
+						if (entry) {
+							entry.finishEpochMs = (new Date()).getTime();
+
+							return store.editInTransaction(db, "entries", function(entryStore) {
+								entryStore.put(entry);
 							});
-						});
-					}
-				});
+						}
+					});
+			});
 		};
 	});

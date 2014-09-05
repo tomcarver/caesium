@@ -53,9 +53,14 @@ caesiumStore
 		this.insertNewTask = function(taskName) {
 			return store.usingDb(function(db) {
 				var newEntry = $filter("newEntry")(taskName);
-				return store.editInTransaction(db, "entries", function(entryStore) {
-					entryStore.add(newEntry);
-				});
+				return store
+					.editInTransaction(db, "entries", function(entryStore) {
+						return entryStore.add(newEntry);
+					})
+					.then(function(id) {
+						newEntry.id = id;
+						return newEntry;
+					});
 			});
 		};
 
@@ -67,7 +72,7 @@ caesiumStore
 							entry.finishEpochMs = (new Date()).getTime();
 
 							return store.editInTransaction(db, "entries", function(entryStore) {
-								entryStore.put(entry);
+								return entryStore.put(entry);
 							});
 						}
 					});

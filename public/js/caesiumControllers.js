@@ -1,19 +1,25 @@
 var controllers = angular.module('caesiumControllers', ['ngRoute', 'caesiumStore', 'caesiumLogic']);
 
+controllers.controller('PageController', function ($scope, caesiumStore, $location) {
+	$scope.globals = {};
+});
+
 controllers.controller('CurrentEntryCtrl', function ($scope, caesiumStore, $location) {
 
-	caesiumStore.getCurrentEntry()
-		.then(function(entry) {
-			if (!entry) {
-				$location.path("/notworking");
-				return;
-			}
-			$scope.status = "Loaded";
-			$scope.currentEntry = entry;
-			$scope.title = entry;
-		}, function(err) {
-			console.log(err);
-		});
+	var logErrors = function(promise) {
+		promise["catch"](function(err) { console.log(err); });
+	};
+
+	var updateStateForEntry = function(entry) {
+		console.log(entry);
+		$scope.currentEntry = entry;
+		$scope.status = entry ? entry.description : "Not recording";
+//			$location.path("/notworking");
+	};
+
+	$scope.status = "Loading...";
+
+	logErrors(caesiumStore.getCurrentEntry().then(updateStateForEntry));
 
 	caesiumStore.getEntriesForToday()
 		.then(function(entries) {
@@ -23,35 +29,15 @@ controllers.controller('CurrentEntryCtrl', function ($scope, caesiumStore, $loca
 	$scope.orderProp = "finishEpochMs";
 
 	$scope.stopWorking = function() {
-		caesiumStore.endCurrentTask()
-			.then(function() {
-				$location.path("/notworking");
-			}, function(err) {
-				console.log(err);
-			});
+		logErrors(caesiumStore.endCurrentTask().then(function() { updateStateForEntry(null); }));
+	};
+
+	$scope.startWorking = function() {
+		logErrors(caesiumStore.insertNewTask("New Task").then(updateStateForEntry));
 	};
 });
 
-controllers.controller('NotWorkingCtrl', function ($scope, caesiumStore, $routeParams, $location) {
+controllers.controller('TabContentCtrl', function ($scope, caesiumStore, $routeParams, $location) {
 
-	$scope.title = "Not working";
-
-	caesiumStore.getCurrentEntry()
-		.then(function(entry) {
-			if (entry) {
-				$location.path("/working");
-				return;
-			}
-		}, function(err) {
-			console.log(err);
-		});
-
-	$scope.startWorking = function() {
-		caesiumStore.insertNewTask("New Task")
-			.then(function() {
-				$location.path("/working");
-			}, function(err) {
-				console.log(err);
-			});
-	};
+	$scope.globals.tabid = $routeParams.tabid;
 });

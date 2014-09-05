@@ -20,11 +20,15 @@ angular.module('promiseHelpers', [])
 			});
 		};
 
-		ns.newTransactionPromise = function(getTransaction) {
+		ns.newTransactionPromise = function(getTransaction, getResultPromise) {
 			return ns.newPromise(function(deferred) {
 				var transaction = getTransaction();
 
-				transaction.oncomplete = function(ev) { deferred.resolve(); };
+				var resultPromise = (getResultPromise || ns.alreadyResolved)(transaction);
+
+				transaction.oncomplete = function(ev) {
+					resultPromise.then(deferred.resolve, deferred.reject);
+				};
 				transaction.onabort = function(ev) { deferred.reject(transaction.error); };
 			});
 		};
@@ -69,6 +73,10 @@ angular.module('promiseHelpers', [])
 					deferred.reject(request.error);
 				};
 			});
+		};
+
+		ns.alreadyResolved = function() {
+			return ns.newPromise(function(deferred) { deferred.resolve(); });
 		};
 
 		return ns;

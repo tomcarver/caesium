@@ -61,12 +61,16 @@ angular.module('store', ['promiseHelpers'])
 			};
 
 			ns.editInTransaction = function(db, storeName, withStore) {
-				return promiseHelpers.newTransactionPromise(function() {
-					var transaction = db.transaction(storeName, "readwrite");
-					withStore(transaction.objectStore(storeName));
-
-					return transaction;
-				});
+				return promiseHelpers.newTransactionPromise(
+					function() {
+						return db.transaction(storeName, "readwrite");
+					},
+					function(transaction) {
+						return promiseHelpers.newRequestPromise(function() {
+							return withStore(transaction.objectStore(storeName));
+						});
+					}
+ 				);
 			}
 
 			return ns;

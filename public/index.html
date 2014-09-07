@@ -21,7 +21,9 @@
 					<input type="text" id="task" ng-model="currentEntry.description" />
 
 					<select>
-						<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">{{entry.dayNumber | getUserDateFromDayNumber}} {{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}} : {{entry.description}}</option>
+						<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">
+							{{entry.dayNumber | getUserDateFromDayNumber}}
+							{{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}} : {{entry.description}}</option>
 					</select>
 
 					<button ng-click="stopRecording()">Stop recording</button>
@@ -32,17 +34,16 @@
 			</div>
 			<nav>
 				<ul>
-					<li data-ng-repeat="id in [1,2,3,4,5]" ng-class="{active:id == globals.tabid}">
-						<a href="#/tabs/{{id}}">Tab {{id}}</a>
+					<li data-ng-repeat="tab in tabs" ng-class="{active:tab.url == location.path()}">
+						<a href="#{{tab.url}}">{{tab.description}}</a>
 					</li>
 				</ul>
 			</nav>
 		</header>
-		<main>
-
+		<div class="main">
 			<div class="container">
 			  <div ng-view class="view-frame"></div>
 			</div>
-		</main>
+		</div>
 	</body>
 </html>

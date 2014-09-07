@@ -2,6 +2,10 @@ var controllers = angular.module('caesiumControllers', ['ngRoute', 'caesiumStore
 
 controllers.controller('PageController', function ($scope, caesiumStore, $location) {
 	$scope.globals = {};
+
+	$scope.tabs = [
+		{ url: "/timesheet", description: "Timesheet" }
+	];
 });
 
 controllers.controller('CurrentEntryCtrl', function ($scope, caesiumStore, $location) {
@@ -37,7 +41,6 @@ controllers.controller('CurrentEntryCtrl', function ($scope, caesiumStore, $loca
 	};
 });
 
-controllers.controller('TabContentCtrl', function ($scope, caesiumStore, $routeParams, $location) {
+controllers.controller('TimesheetCtrl', function ($scope, caesiumStore, $routeParams, $location) {
 
-	$scope.globals.tabid = $routeParams.tabid;
 });

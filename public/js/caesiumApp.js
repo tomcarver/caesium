@@ -1,12 +1,18 @@
-angular.module('caesiumApp', ['ngRoute', 'ngAnimate', 'caesiumControllers'])
+var caesiumModule = angular.module('caesiumApp', ['ngRoute', 'ngAnimate', 'caesiumControllers']);
+
+caesiumModule
 	.config(['$routeProvider',
 		function($routeProvider) {
 			$routeProvider
-				.when('/tabs/:tabid', {
-					templateUrl: 'templates/TabContent.html',
-					controller: 'TabContentCtrl'
+				.when('/timesheet', {
+					templateUrl: 'templates/Timesheet.html',
+					controller: 'TimesheetCtrl'
 				})
 				.otherwise({
-					redirectTo: '/tabs/1'
+					redirectTo: '/timesheet'
 				});
 		}]);
+
+caesiumModule.run(function($rootScope, $location) {
+    $rootScope.location = $location;
+});

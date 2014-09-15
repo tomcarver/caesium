@@ -15,6 +15,10 @@ header, .main {
 	padding: 0.5em 0em 0em 0em;
 }
 
+.recorder {
+	float: right;
+}
+
 .container, nav {
 	max-width: 960px;
 	margin: 0em auto 0em auto;
@@ -49,4 +53,65 @@ nav ul li a {
 
 nav ul li.active a {
 	color: #0E2461;
+}
+
+.proceed {
+	background: #005F00;
+}
+
+.cancel {
+	background: #5F0000;
+}
+
+.deleted {
+	display:none;
+}
+
+.timesheet {
+	border-spacing: 0px;
+	margin: 1em 0em;
+}
+
+.time {
+	width: 5em;
+}
+
+.timesheet, .description { /* this contradiction absorbs all spare space from other cols */
+	width: 30em;
+}
+
+.timesheet button {
+	margin: 1px;
+}
+
+.timesheet td {
+	padding: 0px;
+	margin: 0px;
+	border: 0px;
+}
+
+.timesheet input {
+	background: #E1E1E2;
+	color: #0E2461;
+	border: 0px;
+	padding: 3px;
+	margin: 1px;
+}
+.timesheet .localChanges input {
+	background: #D0FFD0;
+}
+.timesheet input.invalid {
+	background: #FFD0D0;
+}
+
+button {
+	background: #31A3E4;
+	color: white;
+	border: 0px solid;
+	padding: 0.2em 0.4em 0.25em 0.4em;
+	cursor: pointer;
+}
+button:disabled {
+	background: #E1E1E2;
+	cursor: auto;
 }

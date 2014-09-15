@@ -6,6 +6,7 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular-route.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular-animate.js"></script>
+		<script src="js/underscore.js"></script>
 		<script src="js/caesiumLogic.js"></script>
 		<script src="js/promiseHelpers.js"></script>
 		<script src="js/store.js"></script>
@@ -17,24 +18,20 @@
 	<body>
 		<header>
 			<div ng-controller="CurrentEntryCtrl" class="container">
-				<div ng-if="currentEntry">
+				<div ng-if="currentEntry" class="recorder">
 					<input type="text" id="task" ng-model="currentEntry.description" />
 
-					<select>
-						<option ng-repeat="entry in previousEntries | orderBy:orderProp: true">
-							{{entry.dayNumber | getUserDateFromDayNumber}}
-							{{entry.startEpochMs | getUserTimeFromMsCount}} - {{entry.finishEpochMs | getUserTimeFromMsCount}} : {{entry.description}}</option>
-					</select>
-
 					<button ng-click="stopRecording()">Stop recording</button>
+					<button ng-click="newEntry()">New Task</button>
 				</div>
-				<div ng-if="!currentEntry">
+				<div ng-if="!currentEntry" class="recorder">
 					<button ng-click="startRecording()">Start recording</button>
 				</div>
+				<h1>Caesium</h1>
 			</div>
 			<nav>
 				<ul>
-					<li data-ng-repeat="tab in tabs" ng-class="{active:tab.url == location.path()}">
+					<li data-ng-repeat="tab in tabs" ng-class="{active: location.path().substr(0, tab.url.length) == tab.url}">
 						<a href="#{{tab.url}}">{{tab.description}}</a>
 					</li>
 				</ul>

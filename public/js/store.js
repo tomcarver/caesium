@@ -66,9 +66,7 @@ angular.module('store', ['promiseHelpers'])
 						return db.transaction(storeName, "readwrite");
 					},
 					function(transaction) {
-						return promiseHelpers.newRequestPromise(function() {
-							return withStore(transaction.objectStore(storeName));
-						});
+						return withStore(transaction.objectStore(storeName));
 					}
  				);
 			}

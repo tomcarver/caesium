@@ -2,7 +2,7 @@
 	var caesiumModule = angular.module('caesiumApp', ['ngRoute', 'ngAnimate', 'caesiumControllers']);
 
 	var tabs = [
-		{ url: "/about", description: "About", templateUrl: "About.html", controller: "AboutCtrl" },
+		{ url: "/about", description: "About ", templateUrl: "About.html", controller: "AboutCtrl" },
 		{ url: "/timesheet/", description: "Timesheet", templateUrl: 'Timesheet.html', controller: 'TimesheetCtrl', pattern: '/timesheet/:day?'},
 		{ url: "/query", description: "Time Query", templateUrl: 'TimeQuery.html', controller: 'QueryCtrl' }
 	];

@@ -1,14 +1,6 @@
 (function() {
 	var controllers = angular.module('caesiumControllers', ['ngRoute', 'caesiumStore', 'caesiumLogic']);
 
-	controllers.controller('PageController', function ($scope, caesiumStore, $location) {
-		$scope.globals = {};
-
-		$scope.tabs = [
-			{ url: "/timesheet/", description: "Timesheet" }
-		];
-	});
-
 	var logErrors = function(promise) {
 		promise["catch"](function(err) { console.log(err); });
 	};
@@ -16,7 +8,9 @@
 	controllers.controller('CurrentEntryCtrl', function ($scope, $rootScope, caesiumStore, $location) {
 
 		var timeout = null;
-		var saveNewDescription = function(newDescription) {
+		var saveNewDescription = function() {
+			var newDescription = $scope.currentEntry.description;
+
 			logErrors(caesiumStore
 				.updateCurrentEntry(newDescription)
 				.then(function() {
@@ -48,13 +42,11 @@
 				.then(updateStateForEntry));
 		};
 
-		$scope.$watch('currentEntry.description', function(newValue, oldValue) {
-			if (newValue != oldValue) {
-				// wait until the value hasn't changed for 2 seconds before saving to avoid a DB update for every key press
-				window.clearTimeout(timeout);
-				timeout = window.setTimeout(saveNewDescription.bind(null, newValue), 2000);
-			}
-		});
+		$scope.descriptionChanged = function() {
+			// wait until the value hasn't changed for 2 seconds before saving to avoid a DB update for every key press
+			window.clearTimeout(timeout);
+			timeout = window.setTimeout(saveNewDescription, 2000);
+		};
 
 		$scope.startRecording = function() {
 			logErrors(caesiumStore.insertNewEntry().then(updateStateForEntry));
@@ -105,7 +97,6 @@
 
 		$scope.refresh = function() {
 			$scope.timesheet = null;
-			$scope.conflicts = null;
 			logErrors(
 				caesiumStore.getEntriesForDay($scope.day)
 					.then(function(entries) {
@@ -131,8 +122,6 @@
 		};
 
 		$scope.save = function() {
-
-			var original = getOriginalTimesheetFromUi($scope.timesheet);
 			var fromUser = getNewTimesheetFromUi($scope.timesheet);
 
 			var newEntries = $filter("buildEntriesFromTimesheet")(fromUser);
@@ -151,4 +140,66 @@
 
 		$scope.refresh();
 	});
+
+	controllers.controller('QueryCtrl', function ($scope, caesiumStore, $routeParams, $location, $filter) {
+
+		var getDayNumber = $filter("getDayNumber");
+		var sumDurations = $filter("sumDurations");
+
+		var todayNumber = getDayNumber(new Date());
+
+		$scope.from = todayNumber;
+		$scope.to = todayNumber;
+		$scope.text = "";
+		$scope.splitByTask = true;
+		$scope.splitByDay = false;
+
+		var timeout = null;
+
+		$scope.queryChanged = function() {
+			$scope.entries = [{ description: "Loading...", duration: 0 }];
+			// don't query on every keypress
+			window.clearTimeout(timeout);
+			timeout = window.setTimeout(queryData, 200);
+		};
+
+		var queryData = function() {
+			logErrors(
+				caesiumStore.getEntriesForDayRange($scope.from, $scope.to)
+					.then(updateData));
+		};
+
+		var updateData = function(entries) {
+			var filterText = ($scope.text || "").toLowerCase();
+
+			var result = _.chain(entries)
+				.reject(function(entry) {
+					return filterText && ((entry.description || "").toLowerCase().indexOf(filterText) == -1);
+				})
+				.groupBy(function(entry) {
+					return ($scope.splitByTask ? entry.description : "") + "<>" + ($scope.splitByDay ? entry.dayNumber : "")
+				})
+				.map(function(entries, key) {
+					// HACK: writing the logic to decide what fields to include in the
+					// returned object based on which groups are active is messy,
+					// so instead we populate them all based on the first item in the
+					// list, and rely on the view hiding the irrelevant properties.
+					var firstEntry = entries[0];
+					return {
+						dayNumber: $scope.splitByDay && firstEntry.dayNumber,
+						description: $scope.splitByTask && firstEntry.description,
+						duration: sumDurations(entries)
+					};
+				})
+				.value();
+
+			$scope.entries = result.length > 0
+				? result
+				: [{ description: "No entries found", duration: 0 }];
+		};
+
+		$scope.queryChanged();
+	});
+
+	controllers.controller('AboutCtrl', function ($scope) { });
 })();

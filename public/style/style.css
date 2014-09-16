@@ -67,7 +67,7 @@ nav ul li.active a {
 	display:none;
 }
 
-.timesheet {
+.timesheet, .timeQuery {
 	border-spacing: 0px;
 	margin: 1em 0em;
 }
@@ -76,11 +76,12 @@ nav ul li.active a {
 	width: 5em;
 }
 
-.timesheet, .description { /* this contradiction absorbs all spare space from other cols */
+.timesheet, .description, /* this contradiction absorbs all spare space from other cols */
+.timeQuery { 
 	width: 30em;
 }
 
-.timesheet button {
+.timesheet button, .timeQuery button {
 	margin: 1px;
 }
 
@@ -90,17 +91,24 @@ nav ul li.active a {
 	border: 0px;
 }
 
-.timesheet input {
+.timesheet input,
+.timeQuery td {
 	background: #E1E1E2;
 	color: #0E2461;
 	border: 0px;
 	padding: 3px;
 	margin: 1px;
 }
+
+.timeQuery td {
+	border: 1px solid white;
+}
+
 .timesheet .localChanges input {
 	background: #D0FFD0;
 }
-.timesheet input.invalid {
+.ng-invalid,
+.timesheet input.ng-invalid  {
 	background: #FFD0D0;
 }
 
@@ -115,3 +123,51 @@ button:disabled {
 	background: #E1E1E2;
 	cursor: auto;
 }
+
+.hidden {
+	display:none;
+}
+
+.queryInputs {
+	list-style: none;
+	padding: 0px;
+}
+
+.queryInputs label {
+	display: inline-block;
+	width: 10em;
+}
+
+/* jQuery UI */
+
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default,
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus
+{
+	background: #31A3E4;
+	border: 0px solid #999999;
+	color: white;
+}
+
+.ui-state-default.ui-state-active,
+.ui-widget-content,
+.ui-widget-header,
+.ui-widget-header a {
+	color: #0E2461;
+}
+
+.ui-corner-all, .ui-corner-bottom, .ui-corner-right, .ui-corner-br, .ui-corner-left, .ui-corner-bl, .ui-corner-top, .ui-corner-tr, .ui-corner-tl {
+	border-radius: 0px;
+}
+
+.ui-widget-content, .ui-widget-header {
+	border: 0px solid black;
+	background: #E1E1E2;
+}
+

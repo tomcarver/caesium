@@ -142,5 +142,17 @@
 					return $q.all(promises);
 				});
 			};
+
+			this.getEntriesForDayRange = function(fromDayNumber, toDayNumber) {
+				return store.usingDb(function(db) {
+					return promiseHelpers.newQueryPromise(function() {
+						return db
+							.transaction("entries", 'readonly')
+							.objectStore("entries")
+							.index("dayNumber")
+							.openCursor(new IDBKeyRange.bound(fromDayNumber, toDayNumber));
+					});
+				});
+			}
 		});
 })();

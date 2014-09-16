@@ -1,0 +1,36 @@
+<ul class="queryInputs">
+	<li>
+		<label for="from">Between:</label>
+		<input id="from" date ng-model="from" ng-change="queryChanged()"></input>
+	</li>
+	<li>
+		<label for="to">And:</label>
+		<input id="to" date ng-model="to" ng-change="queryChanged()"></input>
+	</li>
+	<li>
+		<label for="text">Containing Text:</label>
+		<input id="text" ng-model="text" ng-change="queryChanged()"></input>
+	</li>
+	<li>
+		<label for="splitbyTask">Split by Task:</label>
+		<input id="splitByTask" type="checkbox" ng-model="splitByTask" ng-change="queryChanged()"></input>
+	</li>
+	<li>
+		<label for="splitbyDay">Split by Day:</label>
+		<input id="splitByDay" type="checkbox" ng-model="splitByDay" ng-change="queryChanged()"></input>
+	</li>
+</ul>
+<table class="timeQuery">
+	<thead>
+		<th ng-class="{hidden: !splitByDay}">Date</th>
+		<th ng-class="{hidden: !splitByTask}">Task</th>
+		<th>Time</th>
+	</thead>
+	<tbody>
+		<tr data-ng-repeat="entry in entries"> <!--  | filter : text | groupTime : {byTask: !splitByTask, byDay: !splitByDay} -->
+			<td ng-class="{hidden: !splitByDay}">{{entry.dayNumber | formatDayNumber}}</td>
+			<td ng-class="{hidden: !splitByTask}">{{entry.description}}</td>
+			<td>{{entry.duration | formatDuration}}</td>
+		</tr>
+	</tbody>
+</table>

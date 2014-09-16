@@ -2,11 +2,18 @@
 	var caesiumLogic = angular.module('caesiumLogic', []);
 
 	var noTaskDescription = "[no task recorded]";
+	var timePattern = /^\s*(\d{1,2})\s*(?:\:\s*(\d{2}))?\s*$/;
+	var datePattern = /^\s*(\d{4})\s*\-\s*(\d{2})\s*\-\s*(\d{2})\s*$/;
 
 	var getDayNumber = function(date) {
+		// also NB: month from date object is zero-based, convert to one-based
+		return getDayNumberFromComponents(date.getDate(), date.getMonth() + 1, date.getFullYear());
+	};
+
+	var getDayNumberFromComponents = function(day, month, year) {
 		// all we need to do is disambiguate days so don't worry about efficient packing - it's fine to leave gaps.
-		// also NB: month is zero-based but we're consistent with it so it's fine.
-		return date.getDate() + (date.getMonth() * 31) + (date.getFullYear() * 31 * 12);
+		// convert month back to zero-based (from more intuitive one-based).
+		return day + ((month - 1) * 31) + (year * 31 * 12);
 	};
 
 	var getOffsetDayNumber = function(dayNum, offset) {
@@ -56,6 +63,32 @@
 
 	var formatDescription = function(descripton) {
 		return _.isUndefined(descripton) ? "deleted" : "'" + descripton + "'";
+	};
+
+	var formatDuration = function($filter, mins) {
+		if (!_.isUndefined(mins)) {
+			var withinDay = mins % (60 * 8);
+			var days = (mins - withinDay) / (60 * 8);
+			var justMins = (withinDay % 60);
+			var hours = (withinDay - justMins) / 60;
+
+			return (days ? days + "d, " : "")
+				+ (hours ? hours + "h, " : "")
+				+ justMins + "m";
+		}
+	}
+
+	var formatMins = function($filter, mins) {
+		if (!_.isUndefined(mins)) {
+			return $filter("date")(new Date(mins * 60 * 1000), "HH:mm");
+		}
+	}
+
+	var formatDayNumber = function ($filter, dayNumber) {
+		if (!_.isUndefined(dayNumber)) {
+			var date = getDateFromDayNumber(dayNumber);
+			return $filter("date")(date, "yyyy-MM-dd");
+		}
 	};
 
 	// currently uses startTime as a primary key, i.e. change of start time is an insertion/deletion pair.
@@ -112,7 +145,7 @@
 		for (var i = 0; i < entries.length; i++) {
 			var entry = entries[i];
 
-			if (typeof cumulativeMins == 'undefined') {
+			if (_.isUndefined(cumulativeMins)) {
 				console.log("overlap - after open-ended task, found task beginning at " + entry.startMins + " mins");
 			}
 			else {
@@ -130,7 +163,7 @@
 			cumulativeMins = entry.finishMins;
 		}
 
-		if (typeof cumulativeMins != 'undefined') {
+		if (!_.isUndefined(cumulativeMins)) {
 			timesheetEntries.push({ "startMins": cumulativeMins, "description": noTaskDescription});
 		}
 
@@ -158,6 +191,24 @@
 		return entries;
 	};
 
+	// NB: not pure - depends on current date/time
+	var sumDurations = function(entries) {
+		var now = new Date();
+		var todayNumber = getDayNumber(now);
+		var nowMins = getOffsetMinsFromDate(now);
+
+ 		return _.reduce(entries, function(cumulativeDuration, entry) {
+			// special case: if the entry day is today, open-ended tasks end *now* not the end of the day.
+
+			var finishMins = _.isUndefined(entry.finishMins)
+				? (entry.dayNumber == todayNumber ? nowMins : (60*24))
+				: entry.finishMins;
+
+			var thisDuration = finishMins - entry.startMins;
+			return cumulativeDuration + thisDuration;
+		}, 0)
+	};
+
 	caesiumLogic.filter({
 		"getDayNumber": function() { return getDayNumber },
 		"getOffsetDayNumber": function() { return getOffsetDayNumber },
@@ -166,7 +217,10 @@
 		"newEntry": function($filter) { return newEntry.bind(null, $filter); },
 		"mergeTimesheets": function() { return mergeTimesheets; },
 		"buildTimesheetFromEntries": function() { return buildTimesheetFromEntries; },
-		"buildEntriesFromTimesheet": function() { return buildEntriesFromTimesheet; }
+		"buildEntriesFromTimesheet": function() { return buildEntriesFromTimesheet; },
+		"formatDuration": function($filter) { return formatDuration.bind(null, $filter); },
+		"formatDayNumber": function($filter) { return formatDayNumber.bind(null, $filter); },
+		"sumDurations": function() { return sumDurations; }
 	});
 
 	caesiumLogic.directive('time', function($filter) {
@@ -174,21 +228,36 @@
 		    restrict: 'A', // specify directive by attribute only
 		    require: 'ngModel',
 		    link: function(scope, element, attr, ngModel) {
-				var timePattern = /^\s*(\d{1,2})\s*(?:\:\s*(\d{2}))?\s*$/;
-		        
 				ngModel.$parsers.push(function (text) {
 					var result = timePattern.exec(text);
-					element.toggleClass('invalid', !result);
+					ngModel.$setValidity("format", result);
 					if (result) {
 						var mins = (result[2] || 0) * 1;
 						return (result[1] * 60) + mins;
 					}
 				});
-				ngModel.$formatters.push(function (mins) {
-					if (typeof mins != 'undefined') {
-						return $filter("date")(new Date(mins * 60 * 1000), "HH:mm");
+				ngModel.$formatters.push(formatMins.bind(null, $filter));
+		    }
+		};
+	});
+
+	caesiumLogic.directive('date', function($filter) {
+		return {
+		    restrict: 'A', // specify directive by attribute only
+		    require: 'ngModel',
+		    link: function(scope, element, attr, ngModel) {
+				$(element).datepicker({ dateFormat: "yy-mm-dd" });
+
+				// NB: in angular 1.3+, use ngModel.$validators.pattern = datePattern.test;
+
+				ngModel.$parsers.push(function (text) {
+					var result = datePattern.exec(text);
+					ngModel.$setValidity("format", result);
+					if (result) {
+						return getDayNumberFromComponents(result[3]*1, result[2]*1, result[1]*1);
 					}
 				});
+				ngModel.$formatters.push(formatDayNumber.bind(null, $filter));
 		    }
 		};
 	});

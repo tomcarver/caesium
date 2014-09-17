@@ -85,6 +85,10 @@ nav ul li.active a {
 	margin: 1px;
 }
 
+.timesheet th, .timeQuery th {
+    text-align: left;
+}
+
 .timesheet td {
 	padding: 0px;
 	margin: 0px;

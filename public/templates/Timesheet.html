@@ -18,6 +18,9 @@
 			<td><input ng-model="entry.editDescription" class="description"></input></td>
 			<td><button ng-click="deleteEntry(entry)" title="Delete entry">X</button></td>
 		</tr>
+		<tr ng-show="timesheet.length == 0">
+			<td colspan="3">[No entries recorded. Click '+' to add an entry]</td>
+		</tr>
 		<tr>
 			<td><button ng-click="newEntry()" ng-disabled="!timesheet">+</button></td>
 		</tr>

@@ -153,7 +153,7 @@
 					console.log("overlap not allowed (" + cumulativeMins + " -> " + entry.startMins + ")");
 				}
 				else {
-					if (entry.startMins > cumulativeMins) {
+					if (entry.startMins > cumulativeMins && cumulativeMins != 0) {
 						timesheetEntries.push({ "startMins": cumulativeMins, "description": noTaskDescription});
 					}
 				}	
@@ -163,7 +163,7 @@
 			cumulativeMins = entry.finishMins;
 		}
 
-		if (!_.isUndefined(cumulativeMins)) {
+		if (!_.isUndefined(cumulativeMins) && cumulativeMins != 0) {
 			timesheetEntries.push({ "startMins": cumulativeMins, "description": noTaskDescription});
 		}
 

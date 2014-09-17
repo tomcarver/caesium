@@ -5,6 +5,9 @@
 	var timePattern = /^\s*(\d{1,2})\s*(?:\:\s*(\d{2}))?\s*$/;
 	var datePattern = /^\s*(\d{4})\s*\-\s*(\d{2})\s*\-\s*(\d{2})\s*$/;
 
+	caesiumLogic.constant("timePattern", timePattern);
+	caesiumLogic.constant("datePattern", datePattern);
+
 	var getDayNumber = function(date) {
 		// also NB: month from date object is zero-based, convert to one-based
 		return getDayNumberFromComponents(date.getDate(), date.getMonth() + 1, date.getFullYear());
@@ -214,8 +217,9 @@
 	};
 
 	caesiumLogic.filter({
-		"getDayNumber": function() { return getDayNumber },
-		"getOffsetDayNumber": function() { return getOffsetDayNumber },
+		"getDayNumber": function() { return getDayNumber; },
+		"getDayNumberFromComponents": function() { return getDayNumberFromComponents; },
+		"getOffsetDayNumber": function() { return getOffsetDayNumber; },
 		"getDateFromDayNumber": function() { return getDateFromDayNumber; },
 		"getOffsetMinsFromDate": function() { return getOffsetMinsFromDate; },
 		"newEntry": function($filter) { return newEntry.bind(null, $filter); },
@@ -223,53 +227,9 @@
 		"buildTimesheetFromEntries": function() { return buildTimesheetFromEntries; },
 		"buildEntriesFromTimesheet": function() { return buildEntriesFromTimesheet; },
 		"formatDuration": function($filter) { return formatDuration.bind(null, $filter); },
+		"formatMins": function($filter) { return formatMins.bind(null, $filter); },
 		"formatDayNumber": function($filter) { return formatDayNumber.bind(null, $filter); },
 		"sumDurations": function() { return sumDurations; },
 		"sumGroupDurations": function() { return sumGroupDurations; }
-	});
-
-	caesiumLogic.directive('time', function($filter) {
-		return {
-		    restrict: 'A', // specify directive by attribute only
-		    require: 'ngModel',
-		    link: function(scope, element, attr, ngModel) {
-				ngModel.$parsers.push(function (text) {
-					var result = timePattern.exec(text);
-					ngModel.$setValidity("format", result);
-					if (result) {
-						var mins = (result[2] || 0) * 1;
-						return (result[1] * 60) + mins;
-					}
-				});
-				ngModel.$formatters.push(function(mins) {
-					ngModel.$setValidity("format", true);
-					return formatMins($filter, mins);
-				});
-		    }
-		};
-	});
-
-	caesiumLogic.directive('date', function($filter) {
-		return {
-		    restrict: 'A', // specify directive by attribute only
-		    require: 'ngModel',
-		    link: function(scope, element, attr, ngModel) {
-				$(element).datepicker({ dateFormat: "yy-mm-dd" });
-
-				// NB: in angular 1.3+, use ngModel.$validators.pattern = datePattern.test;
-
-				ngModel.$parsers.push(function (text) {
-					var result = datePattern.exec(text);
-					ngModel.$setValidity("format", result);
-					if (result) {
-						return getDayNumberFromComponents(result[3]*1, result[2]*1, result[1]*1);
-					}
-				});
-				ngModel.$formatters.push(function(dayNumber) {
-					ngModel.$setValidity("format", true);
-					return formatDayNumber($filter, dayNumber);
-				});
-		    }
-		};
 	});
 })();

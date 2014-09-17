@@ -1,5 +1,5 @@
 (function() {
-	var caesiumModule = angular.module('caesiumApp', ['caesiumControllers']);
+	var caesiumModule = angular.module('caesiumApp', ['caesiumControllers', 'caesiumDirectives']);
 
 	var tabs = [
 		{ url: "/about", description: "About", templateUrl: "templates/About.html", controller: "AboutCtrl" },

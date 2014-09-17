@@ -1,36 +1,47 @@
 <ul class="queryInputs">
 	<li>
 		<label for="from">Between:</label>
-		<input id="from" date ng-model="query.from" ng-change="queryChanged()"></input>
+		<input id="from" date ng-model="query.from" ng-change="refresh()"></input>
 	</li>
 	<li>
 		<label for="to">And:</label>
-		<input id="to" date ng-model="query.to" ng-change="queryChanged()"></input>
+		<input id="to" date ng-model="query.to" ng-change="refresh()"></input>
 	</li>
 	<li>
 		<label for="text">Containing Text:</label>
-		<input id="text" ng-model="query.text" ng-change="queryChanged()"></input>
+		<input id="text" ng-model="query.text" ng-change="refresh()"></input>
 	</li>
 	<li>
 		<label for="splitbyTask">Split by Task:</label>
-		<input id="splitByTask" type="checkbox" ng-model="query.splitByTask" ng-change="queryChanged()"></input>
+		<input id="splitByTask" type="checkbox" ng-model="query.splitByTask" ng-change="refresh()"></input>
 	</li>
 	<li>
 		<label for="splitbyDay">Split by Day:</label>
-		<input id="splitByDay" type="checkbox" ng-model="query.splitByDay" ng-change="queryChanged()"></input>
+		<input id="splitByDay" type="checkbox" ng-model="query.splitByDay" ng-change="refresh()"></input>
 	</li>
 </ul>
 <table class="timeQuery">
 	<thead>
-		<th ng-class="{hidden: !query.splitByDay}">Date</th>
-		<th ng-class="{hidden: !query.splitByTask}">Task</th>
-		<th>Time</th>
+		<tr>
+			<th ng-class="{hidden: !query.splitByDay}">Date</th>
+			<th ng-class="{hidden: !query.splitByTask}">Task</th>
+			<th>Time</th>
+		</tr>
 	</thead>
 	<tbody>
-		<tr data-ng-repeat="entry in entries">
-			<td ng-class="{hidden: !query.splitByDay}">{{entry.dayNumber | formatDayNumber}}</td>
-			<td ng-class="{hidden: !query.splitByTask}">{{entry.description}}</td>
-			<td>{{entry.duration | formatDuration}}</td>
+		<tr data-ng-repeat="entryGroup in entryGroups">
+			<td ng-class="{hidden: !query.splitByDay}">{{entryGroup.dayNumber | formatDayNumber}}</td>
+			<td ng-class="{hidden: !query.splitByTask}">{{entryGroup.description}}</td>
+			<td>{{entryGroup.duration | formatDuration}}</td>
 		</tr>
 	</tbody>
+	<tfoot>
+		<tr>
+			<td ng-class="{hidden: !query.splitByDay}"></td>
+			<td ng-class="{hidden: !query.splitByTask}"></td>
+			<td>{{entryGroups | sumGroupDurations | formatDuration}}</td>
+		</tr>
+	</tfoot>
 </table>
+
+<button ng-click="refresh()">Refresh</button

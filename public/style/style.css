@@ -85,8 +85,10 @@ nav ul li.active a {
 	margin: 1px;
 }
 
-.timesheet th, .timeQuery th {
-    text-align: left;
+.timesheet th, .timeQuery th, .timeQuery tfoot td {
+	text-align: left;
+	font-weight: bold;
+	background: none;
 }
 
 .timesheet td {

@@ -209,6 +209,10 @@
 		}, 0)
 	};
 
+	var sumGroupDurations = function(entries) {
+ 		return _.reduce(entries, function(mins, entry) { return mins + entry.duration; }, 0);
+	};
+
 	caesiumLogic.filter({
 		"getDayNumber": function() { return getDayNumber },
 		"getOffsetDayNumber": function() { return getOffsetDayNumber },
@@ -220,7 +224,8 @@
 		"buildEntriesFromTimesheet": function() { return buildEntriesFromTimesheet; },
 		"formatDuration": function($filter) { return formatDuration.bind(null, $filter); },
 		"formatDayNumber": function($filter) { return formatDayNumber.bind(null, $filter); },
-		"sumDurations": function() { return sumDurations; }
+		"sumDurations": function() { return sumDurations; },
+		"sumGroupDurations": function() { return sumGroupDurations; }
 	});
 
 	caesiumLogic.directive('time', function($filter) {

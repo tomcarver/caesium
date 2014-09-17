@@ -163,8 +163,8 @@
 
 		var timeout = null;
 
-		$scope.queryChanged = function() {
-			$scope.entries = [{ description: "Loading...", duration: 0 }];
+		$scope.refresh = function() {
+			$scope.entryGroups = [{ description: "Loading...", duration: 0 }];
 			// don't query on every keypress
 			window.clearTimeout(timeout);
 			timeout = window.setTimeout(queryData, 200);
@@ -186,26 +186,26 @@
 				.groupBy(function(entry) {
 					return ($scope.query.splitByTask ? entry.description : "") + "<>" + ($scope.query.splitByDay ? entry.dayNumber : "")
 				})
-				.map(function(entries, key) {
+				.map(function(entriesInGroup, key) {
 					// HACK: writing the logic to decide what fields to include in the
 					// returned object based on which groups are active is messy,
 					// so instead we populate them all based on the first item in the
 					// list, and rely on the view hiding the irrelevant properties.
-					var firstEntry = entries[0];
+					var firstEntry = entriesInGroup[0];
 					return {
 						dayNumber: $scope.query.splitByDay && firstEntry.dayNumber,
 						description: $scope.query.splitByTask && firstEntry.description,
-						duration: sumDurations(entries)
+						duration: sumDurations(entriesInGroup)
 					};
 				})
 				.value();
 
-			$scope.entries = result.length > 0
+			$scope.entryGroups = result.length > 0
 				? result
 				: [{ description: "No entries found", duration: 0 }];
 		};
 
-		$scope.queryChanged();
+		$scope.refresh();
 	});
 
 	controllers.controller('AboutCtrl', function ($scope) { });

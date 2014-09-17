@@ -24,7 +24,7 @@
 						.transaction("entries", 'readonly')
 						.objectStore("entries")
 						.index("dayNumber")
-						.openCursor(new IDBKeyRange.only(dayNumber));
+						.openCursor(IDBKeyRange.only(dayNumber));
 				});
 			};
 
@@ -150,7 +150,7 @@
 							.transaction("entries", 'readonly')
 							.objectStore("entries")
 							.index("dayNumber")
-							.openCursor(new IDBKeyRange.bound(fromDayNumber, toDayNumber));
+							.openCursor(IDBKeyRange.bound(fromDayNumber, toDayNumber));
 					});
 				});
 			}

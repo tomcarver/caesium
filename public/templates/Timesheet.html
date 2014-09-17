@@ -1,8 +1,8 @@
-<button ng-disabled="unsavedChanges()" ng-click="navigateToPrevDay()">&lt;</button>
-{{day  | getDateFromDayNumber | date : "mediumDate"}} <!-- TODO calendar -->
-<button ng-disabled="unsavedChanges()" ng-click="navigateToNextDay()">&gt;</button>
+<button ng-disabled="unsavedChanges() || !query.day" ng-click="navigateToPrevDay()">&lt;</button>
+<input ng-disabled="unsavedChanges()" ng-change="navigateToCalendar()" date ng-model="query.day" ></input>
+<button ng-disabled="unsavedChanges() || !query.day" ng-click="navigateToNextDay()">&gt;</button>
 <button ng-disabled="unsavedChanges()" ng-click="navigateToToday()">Today</button>
-<button ng-disabled="unsavedChanges()" ng-click="refresh()">Refresh</button>
+<button ng-disabled="unsavedChanges() || !query.day" ng-click="refresh()">Refresh</button>
 
 <table class="timesheet">
 	<thead>
@@ -14,19 +14,19 @@
 	<tbody>
 		<tr ng-repeat="entry in timesheet"
 			ng-class="{localChanges: entry.isChanged(), deleted : entry.isDeleted}"> 
-			<td><input time ng-model="entry.editStartMins" class="time"></input></td>
-			<td><input ng-model="entry.editDescription" class="description"></input></td>
-			<td><button ng-click="deleteEntry(entry)" title="Delete entry">X</button></td>
+			<td><input ng-disabled="!query.day" ng-model="entry.editStartMins" class="time" time></input></td>
+			<td><input ng-disabled="!query.day" ng-model="entry.editDescription" class="description"></input></td>
+			<td><button ng-disabled="!query.day" ng-click="deleteEntry(entry)" title="Delete entry">X</button></td>
 		</tr>
 		<tr ng-show="timesheet.length == 0">
 			<td colspan="3">[No entries recorded. Click '+' to add an entry]</td>
 		</tr>
 		<tr>
-			<td><button ng-click="newEntry()" ng-disabled="!timesheet">+</button></td>
+			<td><button ng-click="newEntry()" ng-disabled="!timesheet || !query.day">+</button></td>
 		</tr>
 	</tbody>
 </table>
 
-<button ng-disabled="!unsavedChanges()" ng-class="{proceed: unsavedChanges()}" ng-click="save()">Save</button>
-<button ng-disabled="!unsavedChanges()" ng-class="{cancel: unsavedChanges()}" ng-click="refresh()">Discard Changes</button>
+<button ng-disabled="!unsavedChanges() || !query.day" ng-class="{proceed: unsavedChanges()}" ng-click="save()">Save</button>
+<button ng-disabled="!unsavedChanges() || !query.day" ng-class="{cancel: unsavedChanges()}" ng-click="refresh()">Discard Changes</button>
 

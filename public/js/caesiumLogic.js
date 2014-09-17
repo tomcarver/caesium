@@ -241,7 +241,10 @@
 						return (result[1] * 60) + mins;
 					}
 				});
-				ngModel.$formatters.push(formatMins.bind(null, $filter));
+				ngModel.$formatters.push(function(mins) {
+					ngModel.$setValidity("format", true);
+					return formatMins($filter, mins);
+				});
 		    }
 		};
 	});
@@ -262,7 +265,10 @@
 						return getDayNumberFromComponents(result[3]*1, result[2]*1, result[1]*1);
 					}
 				});
-				ngModel.$formatters.push(formatDayNumber.bind(null, $filter));
+				ngModel.$formatters.push(function(dayNumber) {
+					ngModel.$setValidity("format", true);
+					return formatDayNumber($filter, dayNumber);
+				});
 		    }
 		};
 	});

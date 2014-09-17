@@ -90,7 +90,7 @@
 		$scope.today = new Date();
 		
 		var navigateToDayNum = function(dayNum) {
-			$scope.day = dayNum;
+			$scope.query = { day: dayNum };
 			$scope.date = getDateFromDayNumber(dayNum);
 			$scope.refresh();
 		};
@@ -100,9 +100,9 @@
 			$scope.timesheet = null;
 
 			logErrors(
-				caesiumStore.getEntriesForDay($scope.day)
+				caesiumStore.getEntriesForDay($scope.query.day)
 					.then(function(entries) {
-						var timesheet = $filter("buildTimesheetFromEntries")(entries, $scope.day);
+						var timesheet = $filter("buildTimesheetFromEntries")(entries, $scope.query.day);
 						_.each(timesheet, prepareEntryForUi);
 						$scope.timesheet = timesheet;
 					}));
@@ -129,14 +129,15 @@
 			var newEntries = $filter("buildEntriesFromTimesheet")(fromUser);
 
 			logErrors(
-				caesiumStore.replaceEntries($scope.day, newEntries)
+				caesiumStore.replaceEntries($scope.query.day, newEntries)
 					.then($scope.refresh)
 					.then(function() { $rootScope.$broadcast("updateCurrentEntry"); }));
 		};
 
-		$scope.navigateToPrevDay = function() { navigateToDayNum(getOffsetDayNumber($scope.day, -1)); };
-		$scope.navigateToNextDay = function() { navigateToDayNum(getOffsetDayNumber($scope.day, 1)); };
+		$scope.navigateToPrevDay = function() { navigateToDayNum(getOffsetDayNumber($scope.query.day, -1)); };
+		$scope.navigateToNextDay = function() { navigateToDayNum(getOffsetDayNumber($scope.query.day, 1)); };
 		$scope.navigateToToday = function() { navigateToDayNum(getDayNumber($scope.today)); };
+		$scope.navigateToCalendar = function() { if ($scope.query.day) { navigateToDayNum($scope.query.day); } };
 
 		$window.onbeforeunload = function() {
 			if ($scope.unsavedChanges())

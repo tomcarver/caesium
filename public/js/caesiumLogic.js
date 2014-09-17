@@ -80,7 +80,7 @@
 
 	var formatMins = function($filter, mins) {
 		if (!_.isUndefined(mins)) {
-			return $filter("date")(new Date(mins * 60 * 1000), "HH:mm");
+			return $filter("date")(new Date(0,0,0,0, mins), "HH:mm");
 		}
 	}
 

@@ -55,33 +55,65 @@
 		var formatDayNumber = $filter("formatDayNumber");
 		var getColor = $filter("getColor");
 
+		var getLabel = function(entryGroup) {
+			return (entryGroup.dayNumber ? formatDayNumber(entryGroup.dayNumber) + ": " : "")
+				+ (entryGroup.description ? entryGroup.description + ": " : "")
+				+ formatDuration(entryGroup.duration);
+		};
+
 		return {
 		    restrict: 'A', // specify directive by attribute only
 		    link: function(scope, element, attr) {
 				var expr = $parse(attr.timeGraph);
 
+				var lastChart = null;
+
 				scope.$watch(expr, function(entryGroups) {
 
-					var data = _.map(entryGroups, function(entryGroup, index) {
-						return {
-							value: entryGroup.duration,
-							color: getColor(120, 60, index),
-							highlight: getColor(150, 60, index),
-							label: (entryGroup.dayNumber ? formatDayNumber(entryGroup.dayNumber) + ": " : "")
-								+ (entryGroup.description ? entryGroup.description + ": " : "")
-								+ formatDuration(entryGroup.duration)
-						};
-					});
+					entryGroups = _.sortBy(entryGroups, function(e) { return e.dayNumber; });
+
+					var dayNumbers = _.map(entryGroups, function(e) { return e.dayNumber; });
+					var descriptions = _.map(entryGroups, function(e) { return e.description; });
 
 					var options = {
 						animation: false,
-						tooltipTemplate: "<%= label %>"
+						tooltipTemplate: "<%= label %>",
+						showScale: false,
+						barShowStroke: false
 					};
 
-					element.children().remove();
-					var canvas = element.prepend('<canvas width="400" height="400" ></canvas>').children()[0];
-					var ctx = canvas.getContext("2d");
-					new Chart(ctx).Pie(data, options);
+					if (lastChart)
+						lastChart.destroy();
+
+					var ctx = element[0].getContext("2d");
+
+					if (_.uniq(dayNumbers).length > 1 && _.uniq(descriptions).length == 1) {
+						
+						var data = {
+							labels: _.map(entryGroups, getLabel),
+							datasets:  [{
+								data: _.map(entryGroups, function(e) { return e.duration; }),
+								fillColor: getColor(120, 60, 0),
+								highlightFill: getColor(150, 60, 0),
+								label: ""
+							}]
+						};
+
+						lastChart = new Chart(ctx).Bar(data, options);
+					}
+					else {
+
+						var data = _.map(entryGroups, function(entryGroup, index) {
+							return {
+								value: entryGroup.duration,
+								color: getColor(120, 60, index),
+								highlight: getColor(150, 60, index),
+								label: getLabel(entryGroup)
+							};
+						});
+
+						lastChart = new Chart(ctx).Pie(data, options);
+					}
 				});
 		    }
 		};

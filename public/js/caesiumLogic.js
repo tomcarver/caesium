@@ -216,25 +216,14 @@
  		return _.reduce(entries, function(mins, entry) { return mins + entry.duration; }, 0);
 	};
 
-	var toHex = function(num) {
-		num = num % 16;
-		if (num < 10) return Math.floor(num).toString();
-		if (num < 11) return "a";
-		if (num < 12) return "b";
-		if (num < 13) return "c";
-		if (num < 14) return "d";
-		if (num < 15) return "e";
-		if (num < 16) return "f";
-	};
-
-	var rgbToHex = function(r, g, b) {
-		return "#" + toHex(r / 16) + toHex(r % 16) + toHex(g / 16) + toHex(g % 16) + toHex(b / 16) + toHex(b % 16);
+	var AsRgba = function(r, g, b) {
+		return "rgba(" + Math.round(r) + "," + Math.round(g) +"," + Math.round(b) + ",1)";
 	};
 
 	var scalar = 3.8833; // approx 2pi/golden ratio, ensures optimal colour spacing
 
 	var getColor = function(average, amplitude, index) {
-		return rgbToHex(
+		return AsRgba(
 			average + amplitude*Math.sin(index*scalar),
 			average + amplitude*Math.sin((index*scalar) + 2.09),
 			average + amplitude*Math.sin((index*scalar) + 4.18)

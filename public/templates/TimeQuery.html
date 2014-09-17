@@ -29,7 +29,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<tr data-ng-repeat="entryGroup in entryGroups">
+		<tr data-ng-repeat="entryGroup in entryGroups | orderBy : sortOrder">
 			<td ng-class="{hidden: !query.splitByDay}">{{entryGroup.dayNumber | formatDayNumber}}</td>
 			<td ng-class="{hidden: !query.splitByTask}">{{entryGroup.description}}</td>
 			<td>{{entryGroup.duration | formatDuration}}</td>

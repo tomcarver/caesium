@@ -161,6 +161,8 @@
 			splitByDay: false
 		};
 
+		$scope.sortOrder = ['-dayNumber', 'description', 'duration'];
+
 		var timeout = null;
 
 		$scope.refresh = function() {

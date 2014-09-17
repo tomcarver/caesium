@@ -61,6 +61,33 @@
 				+ formatDuration(entryGroup.duration);
 		};
 
+		var drawPieChart = function(ctx, entryGroups, options) {
+			var data = _.map(entryGroups, function(entryGroup, index) {
+				return {
+					value: entryGroup.duration,
+					color: getColor(120, 60, index),
+					highlight: getColor(150, 60, index),
+					label: getLabel(entryGroup)
+				};
+			});
+
+			return new Chart(ctx).Pie(data, options);
+		};
+
+		var drawBarChart = function(ctx, entryGroups, options) {
+			var data = {
+				labels: _.map(entryGroups, getLabel),
+				datasets: [{
+					data: _.map(entryGroups, function(e) { return e.duration; }),
+					fillColor: getColor(120, 60, 0),
+					highlightFill: getColor(150, 60, 0),
+					label: ""
+				}]
+			};
+
+			return new Chart(ctx).Bar(data, options);
+		};
+
 		return {
 		    restrict: 'A', // specify directive by attribute only
 		    link: function(scope, element, attr) {
@@ -75,6 +102,9 @@
 					var dayNumbers = _.map(entryGroups, function(e) { return e.dayNumber; });
 					var descriptions = _.map(entryGroups, function(e) { return e.description; });
 
+					var splitByDay = _.uniq(dayNumbers).length > 1;
+					var splitByTask = _.uniq(descriptions).length > 1;
+
 					var options = {
 						animation: false,
 						tooltipTemplate: "<%= label %>",
@@ -87,33 +117,13 @@
 
 					var ctx = element[0].getContext("2d");
 
-					if (_.uniq(dayNumbers).length > 1 && _.uniq(descriptions).length == 1) {
-						
-						var data = {
-							labels: _.map(entryGroups, getLabel),
-							datasets:  [{
-								data: _.map(entryGroups, function(e) { return e.duration; }),
-								fillColor: getColor(120, 60, 0),
-								highlightFill: getColor(150, 60, 0),
-								label: ""
-							}]
-						};
+					// TODO stacked bar would be better for split by both
+					var chartToDraw = splitByTask
+						? drawPieChart
+						: (splitByDay ? drawBarChart : null);
 
-						lastChart = new Chart(ctx).Bar(data, options);
-					}
-					else {
-
-						var data = _.map(entryGroups, function(entryGroup, index) {
-							return {
-								value: entryGroup.duration,
-								color: getColor(120, 60, index),
-								highlight: getColor(150, 60, index),
-								label: getLabel(entryGroup)
-							};
-						});
-
-						lastChart = new Chart(ctx).Pie(data, options);
-					}
+					if (chartToDraw)
+						lastChart = chartToDraw(ctx, entryGroups, options);
 				});
 		    }
 		};

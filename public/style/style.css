@@ -142,6 +142,13 @@ button:disabled {
 	width: 10em;
 }
 
+.view-frame {
+	display:none;
+}
+.view-frame.active {
+	display:block;
+}
+
 /* jQuery UI */
 
 .ui-state-default,

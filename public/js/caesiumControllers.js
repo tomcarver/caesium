@@ -53,7 +53,7 @@
 		};
 	});
 
-	controllers.controller('TimesheetCtrl', function ($scope, $rootScope, caesiumStore, $routeParams, $location, $filter) { /* TODO prevent nav when unsaved */
+	controllers.controller('TimesheetCtrl', function ($scope, $rootScope, caesiumStore, $filter) { /* TODO prevent nav when unsaved */
 
 		var getDayNumber = $filter("getDayNumber");
 		var getDateFromDayNumber = $filter("getDateFromDayNumber");
@@ -88,15 +88,17 @@
 		};
 
 		$scope.today = new Date();
-
-		$scope.date = $routeParams.day
-			? getDateFromDayNumber($routeParams.day)
-			: $scope.today;
-
-		$scope.day = getDayNumber($scope.date);
+		
+		var navigateToDayNum = function(dayNum) {
+			$scope.day = dayNum;
+			$scope.date = getDateFromDayNumber(dayNum);
+			$scope.refresh();
+		};
 
 		$scope.refresh = function() {
+			$scope.today = new Date();
 			$scope.timesheet = null;
+
 			logErrors(
 				caesiumStore.getEntriesForDay($scope.day)
 					.then(function(entries) {
@@ -132,27 +134,27 @@
 					.then(function() { $rootScope.$broadcast("updateCurrentEntry"); }));
 		};
 
-		var navigateToDayNum = function(dayNum) { $location.path("/timesheet/" + dayNum); };
+		$scope.navigateToPrevDay = function() { navigateToDayNum(getOffsetDayNumber($scope.day, -1)); };
+		$scope.navigateToNextDay = function() { navigateToDayNum(getOffsetDayNumber($scope.day, 1)); };
+		$scope.navigateToToday = function() { navigateToDayNum(getDayNumber($scope.today)); };
 
-		$scope.navigateToPrevDay = _.partial(navigateToDayNum, getOffsetDayNumber($scope.day, -1));
-		$scope.navigateToNextDay = _.partial(navigateToDayNum, getOffsetDayNumber($scope.day, 1));
-		$scope.navigateToToday = _.partial(navigateToDayNum, getDayNumber($scope.today)); 
-
-		$scope.refresh();
+		navigateToDayNum(getDayNumber($scope.today));
 	});
 
-	controllers.controller('QueryCtrl', function ($scope, caesiumStore, $routeParams, $location, $filter) {
+	controllers.controller('QueryCtrl', function ($scope, caesiumStore, $filter) {
 
 		var getDayNumber = $filter("getDayNumber");
 		var sumDurations = $filter("sumDurations");
 
 		var todayNumber = getDayNumber(new Date());
 
-		$scope.from = todayNumber;
-		$scope.to = todayNumber;
-		$scope.text = "";
-		$scope.splitByTask = true;
-		$scope.splitByDay = false;
+		$scope.query = {
+			from: todayNumber,
+			to: todayNumber,
+			text: "",
+			splitByTask: true,
+			splitByDay: false
+		};
 
 		var timeout = null;
 
@@ -165,19 +167,19 @@
 
 		var queryData = function() {
 			logErrors(
-				caesiumStore.getEntriesForDayRange($scope.from, $scope.to)
+				caesiumStore.getEntriesForDayRange($scope.query.from, $scope.query.to)
 					.then(updateData));
 		};
 
 		var updateData = function(entries) {
-			var filterText = ($scope.text || "").toLowerCase();
+			var filterText = ($scope.query.text || "").toLowerCase();
 
 			var result = _.chain(entries)
 				.reject(function(entry) {
 					return filterText && ((entry.description || "").toLowerCase().indexOf(filterText) == -1);
 				})
 				.groupBy(function(entry) {
-					return ($scope.splitByTask ? entry.description : "") + "<>" + ($scope.splitByDay ? entry.dayNumber : "")
+					return ($scope.query.splitByTask ? entry.description : "") + "<>" + ($scope.query.splitByDay ? entry.dayNumber : "")
 				})
 				.map(function(entries, key) {
 					// HACK: writing the logic to decide what fields to include in the
@@ -186,8 +188,8 @@
 					// list, and rely on the view hiding the irrelevant properties.
 					var firstEntry = entries[0];
 					return {
-						dayNumber: $scope.splitByDay && firstEntry.dayNumber,
-						description: $scope.splitByTask && firstEntry.description,
+						dayNumber: $scope.query.splitByDay && firstEntry.dayNumber,
+						description: $scope.query.splitByTask && firstEntry.description,
 						duration: sumDurations(entries)
 					};
 				})

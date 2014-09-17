@@ -33,7 +33,7 @@
 			</div>
 			<nav>
 				<ul>
-					<li data-ng-repeat="tab in tabs" ng-class="{active: location.path().substr(0, tab.url.length) == tab.url}">
+					<li data-ng-repeat="tab in tabs" ng-class="{active: isTabActive(tab)}">
 						<a href="#{{tab.url}}">{{tab.description}}</a>
 					</li>
 				</ul>
@@ -41,7 +41,12 @@
 		</header>
 		<div class="main">
 			<div class="container">
-			  <div ng-view class="view-frame"></div>
+				<div class="view-frame"
+					data-ng-repeat="tab in tabs"
+					ng-class="{active: isTabActive(tab)}"
+					ng-include="tab.templateUrl"
+					ng-controller="tab.getController">
+				</div>
 			</div>
 		</div>
 	</body>

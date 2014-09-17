@@ -187,10 +187,6 @@
 					return ($scope.query.splitByTask ? entry.description : "") + "<>" + ($scope.query.splitByDay ? entry.dayNumber : "")
 				})
 				.map(function(entriesInGroup, key) {
-					// HACK: writing the logic to decide what fields to include in the
-					// returned object based on which groups are active is messy,
-					// so instead we populate them all based on the first item in the
-					// list, and rely on the view hiding the irrelevant properties.
 					var firstEntry = entriesInGroup[0];
 					return {
 						dayNumber: $scope.query.splitByDay && firstEntry.dayNumber,

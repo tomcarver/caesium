@@ -49,4 +49,41 @@
 		    }
 		};
 	});
+
+	caesiumDirectives.directive('timeGraph', function($parse, $filter) {
+		var formatDuration = $filter("formatDuration");
+		var formatDayNumber = $filter("formatDayNumber");
+		var getColor = $filter("getColor");
+
+		return {
+		    restrict: 'A', // specify directive by attribute only
+		    link: function(scope, element, attr) {
+				var expr = $parse(attr.timeGraph);
+
+				scope.$watch(expr, function(entryGroups) {
+
+					var data = _.map(entryGroups, function(entryGroup, index) {
+						return {
+							value: entryGroup.duration,
+							color: getColor(120, 60, index),
+							highlight: getColor(150, 60, index),
+							label: (entryGroup.dayNumber ? formatDayNumber(entryGroup.dayNumber) + ": " : "")
+								+ (entryGroup.description ? entryGroup.description + ": " : "")
+								+ formatDuration(entryGroup.duration)
+						};
+					});
+
+					var options = {
+						animation: false,
+						tooltipTemplate: "<%= label %>"
+					};
+
+					element.children().remove();
+					var canvas = element.prepend('<canvas width="400" height="400" ></canvas>').children()[0];
+					var ctx = canvas.getContext("2d");
+					new Chart(ctx).Pie(data, options);
+				});
+		    }
+		};
+	});
 })();

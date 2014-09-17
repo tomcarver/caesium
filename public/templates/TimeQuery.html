@@ -20,6 +20,9 @@
 		<input id="splitByDay" type="checkbox" ng-model="query.splitByDay" ng-change="refresh()"></input>
 	</li>
 </ul>
+
+<div time-graph="entryGroups" style="float:right;"></div>
+
 <table class="timeQuery">
 	<thead>
 		<tr>
@@ -44,4 +47,4 @@
 	</tfoot>
 </table>
 
-<button ng-click="refresh()">Refresh</button
+<button ng-click="refresh()">Refresh</button>

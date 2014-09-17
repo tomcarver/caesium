@@ -216,6 +216,31 @@
  		return _.reduce(entries, function(mins, entry) { return mins + entry.duration; }, 0);
 	};
 
+	var toHex = function(num) {
+		num = num % 16;
+		if (num < 10) return Math.floor(num).toString();
+		if (num < 11) return "a";
+		if (num < 12) return "b";
+		if (num < 13) return "c";
+		if (num < 14) return "d";
+		if (num < 15) return "e";
+		if (num < 16) return "f";
+	};
+
+	var rgbToHex = function(r, g, b) {
+		return "#" + toHex(r / 16) + toHex(r % 16) + toHex(g / 16) + toHex(g % 16) + toHex(b / 16) + toHex(b % 16);
+	};
+
+	var scalar = 3.8833; // approx 2pi/golden ratio, ensures optimal colour spacing
+
+	var getColor = function(average, amplitude, index) {
+		return rgbToHex(
+			average + amplitude*Math.sin(index*scalar),
+			average + amplitude*Math.sin((index*scalar) + 2.09),
+			average + amplitude*Math.sin((index*scalar) + 4.18)
+		);
+	};
+
 	caesiumLogic.filter({
 		"getDayNumber": function() { return getDayNumber; },
 		"getDayNumberFromComponents": function() { return getDayNumberFromComponents; },
@@ -230,6 +255,7 @@
 		"formatMins": function($filter) { return formatMins.bind(null, $filter); },
 		"formatDayNumber": function($filter) { return formatDayNumber.bind(null, $filter); },
 		"sumDurations": function() { return sumDurations; },
-		"sumGroupDurations": function() { return sumGroupDurations; }
+		"sumGroupDurations": function() { return sumGroupDurations; },
+		"getColor": function() { return getColor; }
 	});
 })();

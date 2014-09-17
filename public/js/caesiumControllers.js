@@ -77,6 +77,7 @@
 			return _.chain(timesheet)
 				.reject(function(entry){ return entry.isDeleted; })
 				.map(function(entry) { return {"startMins" : entry.editStartMins, "description" : entry.editDescription }; })
+				.sortBy(function(entry) { return entry.startMins; })
 				.value();
 		}
 
@@ -84,6 +85,7 @@
 			return _.chain(timesheet)
 				.reject(function(entry){ return entry.isUnsaved; })
 				.map(function(entry) { return {"startMins" : entry.startMins, "description" : entry.description }; })
+				.sortBy(function(entry) { return entry.startMins; })
 				.value();
 		};
 

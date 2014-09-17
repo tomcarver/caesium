@@ -53,7 +53,7 @@
 		};
 	});
 
-	controllers.controller('TimesheetCtrl', function ($scope, $rootScope, caesiumStore, $filter) { /* TODO prevent nav when unsaved */
+	controllers.controller('TimesheetCtrl', function ($scope, $rootScope, caesiumStore, $filter, $window) {
 
 		var getDayNumber = $filter("getDayNumber");
 		var getDateFromDayNumber = $filter("getDateFromDayNumber");
@@ -137,6 +137,11 @@
 		$scope.navigateToPrevDay = function() { navigateToDayNum(getOffsetDayNumber($scope.day, -1)); };
 		$scope.navigateToNextDay = function() { navigateToDayNum(getOffsetDayNumber($scope.day, 1)); };
 		$scope.navigateToToday = function() { navigateToDayNum(getDayNumber($scope.today)); };
+
+		$window.onbeforeunload = function() {
+			if ($scope.unsavedChanges())
+				return "Unsaved changes to your timesheet will be lost"; 
+		};
 
 		navigateToDayNum(getDayNumber($scope.today));
 	});

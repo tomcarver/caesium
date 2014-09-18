@@ -62,19 +62,26 @@
 		};
 
 		var drawPieChart = function(ctx, entryGroups, options) {
-			var data = _.map(entryGroups, function(entryGroup, index) {
-				return {
-					value: entryGroup.duration,
-					color: getColor(120, 60, index),
-					highlight: getColor(150, 60, index),
-					label: getLabel(entryGroup)
-				};
-			});
+
+			var data = _.chain(entryGroups)
+				.sortBy(function(e) { return -e.duration; })
+				.map(function(entryGroup, index) {
+					return {
+						value: entryGroup.duration,
+						color: getColor(120, 60, index),
+						highlight: getColor(150, 60, index),
+						label: getLabel(entryGroup)
+					};
+				})
+				.value();
 
 			return new Chart(ctx).Pie(data, options);
 		};
 
 		var drawBarChart = function(ctx, entryGroups, options) {
+
+			entryGroups = _.sortBy(entryGroups, function(e) { return e.dayNumber; });
+
 			var data = {
 				labels: _.map(entryGroups, getLabel),
 				datasets: [{
@@ -96,8 +103,6 @@
 				var lastChart = null;
 
 				scope.$watch(expr, function(entryGroups) {
-
-					entryGroups = _.sortBy(entryGroups, function(e) { return e.dayNumber; });
 
 					var dayNumbers = _.map(entryGroups, function(e) { return e.dayNumber; });
 					var descriptions = _.map(entryGroups, function(e) { return e.description; });

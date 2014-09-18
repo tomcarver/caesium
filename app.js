@@ -1,8 +1,8 @@
+//NB: this exists simply to run Caesium locally for testing
+
 var express = require('express')
   , http = require('http')
-  , path = require('path')
-  , _ = require('underscore')
-  , fs = require('fs');
+  , path = require('path');
 
 var app = express();
 

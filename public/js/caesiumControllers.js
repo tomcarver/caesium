@@ -158,6 +158,8 @@
 
 		var getDayNumber = $filter("getDayNumber");
 		var sumDurations = $filter("sumDurations");
+		var formatDayNumber = $filter('formatDayNumber');
+		var csvEscapeRow = $filter("csvEscapeRow");
 
 		var todayNumber = getDayNumber(new Date());
 
@@ -209,6 +211,24 @@
 			$scope.entryGroups = result.length > 0
 				? result
 				: [{ description: "No entries found", duration: 0 }];
+		};
+
+		$scope.getCsv = function() {
+			var d = $scope.query.splitByDay;
+			var t = $scope.query.splitByTask;
+
+			var csv = (d ? "Day," : "") + (t ? "Task," : "") + "No. Minutes" + "\r\n"
+				+ _.map($scope.entryGroups, function(e)
+				{
+					var values = [];
+					if ($scope.query.splitByDay) values.push(formatDayNumber(e.dayNumber));
+					if ($scope.query.splitByTask) values.push(e.description);
+					values.push(e.duration);
+
+					return csvEscapeRow(values);
+				}).join("");
+
+			window.location = "data:application/octet-stream," + encodeURIComponent(csv);
 		};
 
 		$scope.refresh();

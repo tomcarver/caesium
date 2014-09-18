@@ -237,6 +237,14 @@
 		);
 	};
 
+	var csvEscape = function(str) {
+		return '"' + str.toString().replace(/"/g, '""') + '"';
+	};
+
+	var csvEscapeRow = function(arr) {
+		return _.map(arr, csvEscape).join(",") + "\r\n";
+	};
+
 	caesiumLogic.filter({
 		"getDayNumber": function() { return getDayNumber; },
 		"getDayNumberFromComponents": function() { return getDayNumberFromComponents; },
@@ -253,6 +261,7 @@
 		"sumDurations": function() { return sumDurations; },
 		"sumGroupDurations": function() { return sumGroupDurations; },
 		"mostRecentStartTime": function() { return mostRecentStartTime; },
-		"getColor": function() { return getColor; }
+		"getColor": function() { return getColor; },
+		"csvEscapeRow": function() { return csvEscapeRow; }
 	});
 })();

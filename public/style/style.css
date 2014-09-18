@@ -151,6 +151,10 @@ button:disabled {
 	display:block;
 }
 
+#task {
+	width: 20em;
+}
+
 /* jQuery UI */
 
 .ui-state-default,

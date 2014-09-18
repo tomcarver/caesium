@@ -212,6 +212,13 @@
 		}, 0)
 	};
 
+	var mostRecentStartTime = function(entries) {
+		var startTimes = _.map(entries, function(e) {
+			return (e.dayNumber * 24*60) + e.startMins;
+		});
+		return Math.max.apply(null, startTimes);
+	};
+
 	var sumGroupDurations = function(entries) {
  		return _.reduce(entries, function(mins, entry) { return mins + entry.duration; }, 0);
 	};
@@ -220,13 +227,13 @@
 		return "rgba(" + Math.round(r) + "," + Math.round(g) +"," + Math.round(b) + ",1)";
 	};
 
-	var scalar = 3.8833; // approx 2pi/golden ratio, ensures optimal colour spacing
-
 	var getColor = function(average, amplitude, index) {
+		var scalar = 3.8833; // ~2pi/golden ratio, ensures optimal colour spacing
+
 		return AsRgba(
 			average + amplitude*Math.sin(index*scalar),
-			average + amplitude*Math.sin((index*scalar) + 2.09),
-			average + amplitude*Math.sin((index*scalar) + 4.18)
+			average + amplitude*Math.sin((index*scalar) + 2.09), // ~2pi * 1/3 , ensures rgb are out of phase -> hue rotation
+			average + amplitude*Math.sin((index*scalar) + 4.18) // ~2pi * 2/3
 		);
 	};
 
@@ -245,6 +252,7 @@
 		"formatDayNumber": function($filter) { return formatDayNumber.bind(null, $filter); },
 		"sumDurations": function() { return sumDurations; },
 		"sumGroupDurations": function() { return sumGroupDurations; },
+		"mostRecentStartTime": function() { return mostRecentStartTime; },
 		"getColor": function() { return getColor; }
 	});
 })();

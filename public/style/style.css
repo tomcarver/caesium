@@ -153,6 +153,12 @@ button:disabled {
 
 #task {
 	width: 20em;
+	margin-right: 2em;
+}
+
+#recentTasks {
+	width: 22em;
+	margin-right: -22.5em;
 }
 
 /* jQuery UI */

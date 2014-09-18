@@ -23,6 +23,10 @@
 		<header>
 			<div ng-controller="CurrentEntryCtrl" class="container">
 				<div ng-if="currentEntry" class="recorder">
+					<select id="recentTasks" ng-model="currentEntry.description" ng-change="descriptionChanged()">
+						<option data-ng-repeat="desc in recentDescriptions">{{desc}}</option>
+					</select>
+
 					<input type="text" id="task" ng-model="currentEntry.description" ng-change="descriptionChanged()"/>
 
 					<button ng-click="stopRecording()">Stop recording</button>

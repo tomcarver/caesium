@@ -153,6 +153,26 @@
 							.openCursor(IDBKeyRange.bound(fromDayNumber, toDayNumber));
 					});
 				});
-			}
+			};
+
+			this.getRecentTaskDescriptions = function() {
+				var dayNumber = $filter("getDayNumber")(new Date());
+				var mostRecentStartTime = $filter("mostRecentStartTime");
+
+				return this.getEntriesForDayRange(dayNumber - 14, dayNumber)
+					.then(function(entries) {
+						return _.chain(entries)
+							.groupBy("description")
+							.map(function(entriesForDesc, description) {
+								return {
+									description: description,
+									mostRecent: -mostRecentStartTime(entriesForDesc)
+								};
+							})
+							.sortBy("mostRecent")
+							.map("description")
+							.value();
+					});
+			};
 		});
 })();

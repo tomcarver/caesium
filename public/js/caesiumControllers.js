@@ -22,6 +22,11 @@
 			window.clearTimeout(timeout);
 			$scope.currentEntry = entry ? {description: entry.description} : null;
 			$scope.globals.status = entry ? entry.description : "Not recording";
+
+			logErrors(caesiumStore.getRecentTaskDescriptions()
+				.then(function(descriptions) {
+					$scope.recentDescriptions = descriptions;
+				}));
 		};
 
 		$scope.globals.status = "Loading...";

@@ -80,17 +80,17 @@
 
 		var getNewTimesheetFromUi = function(timesheet) {
 			return _.chain(timesheet)
-				.reject(function(entry){ return entry.isDeleted; })
+				.reject("isDeleted")
 				.map(function(entry) { return {"startMins" : entry.editStartMins, "description" : entry.editDescription }; })
-				.sortBy(function(entry) { return entry.startMins; })
+				.sortBy("startMins")
 				.value();
 		}
 
 		var getOriginalTimesheetFromUi = function(timesheet) {
 			return _.chain(timesheet)
-				.reject(function(entry){ return entry.isUnsaved; })
+				.reject("isUnsaved")
 				.map(function(entry) { return {"startMins" : entry.startMins, "description" : entry.description }; })
-				.sortBy(function(entry) { return entry.startMins; })
+				.sortBy("startMins")
 				.value();
 		};
 

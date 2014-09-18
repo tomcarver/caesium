@@ -80,12 +80,12 @@
 
 		var drawBarChart = function(ctx, entryGroups, options) {
 
-			entryGroups = _.sortBy(entryGroups, function(e) { return e.dayNumber; });
+			entryGroups = _.sortBy(entryGroups, "dayNumber");
 
 			var data = {
 				labels: _.map(entryGroups, getLabel),
 				datasets: [{
-					data: _.map(entryGroups, function(e) { return e.duration; }),
+					data: _.map(entryGroups, "duration"),
 					fillColor: getColor(120, 60, 0),
 					highlightFill: getColor(150, 60, 0),
 					label: ""
@@ -104,11 +104,8 @@
 
 				scope.$watch(expr, function(entryGroups) {
 
-					var dayNumbers = _.map(entryGroups, function(e) { return e.dayNumber; });
-					var descriptions = _.map(entryGroups, function(e) { return e.description; });
-
-					var splitByDay = _.uniq(dayNumbers).length > 1;
-					var splitByTask = _.uniq(descriptions).length > 1;
+					var splitByDay = _.uniq(_.map(entryGroups, "dayNumber")).length > 1;
+					var splitByTask = _.uniq(_.map(entryGroups, "description")).length > 1;
 
 					var options = {
 						animation: false,

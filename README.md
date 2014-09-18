@@ -4,7 +4,7 @@ A fully client-side time-tracking web app using indexedDb and AngularJs. Live ap
 
 ## Getting Started
 
-Caesium is already stored as static content, but a basic runner that uses express to serve the content on a local port has been provided for convenience
+Caesium requires no pre-compilation, just serve the public/ directory over http. However, for convenience a basic express runner has been provided. Start it like so:
 
     npm install
     npm start    // Caesium is now accessible at http://localhost:3000/

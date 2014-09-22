@@ -1,0 +1,24 @@
+CACHE MANIFEST
+# v1
+//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js
+//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js
+//ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.min.js
+//ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular-route.js
+//ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular-animate.js
+//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css
+
+templates/Timesheet.html
+templates/TimeQuery.html
+templates/About.html
+index.html
+style/style.css
+js/chart.js
+js/caesiumStore.js
+js/caesiumDirectives.js
+js/underscore.js
+js/caesiumApp.js
+js/store.js
+js/promiseHelpers.js
+js/caesiumControllers.js
+js/caesiumLogic.js
+
